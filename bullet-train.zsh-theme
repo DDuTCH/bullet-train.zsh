@@ -185,6 +185,9 @@ fi
 if [ ! -n "${BULLETTRAIN_GIT_PROMPT_CMD+1}" ]; then
   BULLETTRAIN_GIT_PROMPT_CMD="\$(git_prompt_info)"
 fi
+if [ ! -n "${BULLETTRAIN_GIT_EXCLUDE+1}" ]; then
+	BULLETTRAIN_GIT_EXCLUDE=()
+fi
 
 # PERL
 if [ ! -n "${BULLETTRAIN_PERL_BG+1}" ]; then
@@ -384,6 +387,12 @@ prompt_git() {
   if [[ "$(command git config --get oh-my-zsh.hide-status 2>/dev/null)" == "1" ]]; then
     return
   fi
+  for folder in "${BULLETTRAIN_GIT_EXCLUDE[@]}"; do
+    if [[ "${PWD}" =~ ^${folder}$ ]]; then
+      return
+    fi
+  done
+
 
   local ref dirty mode repo_path git_prompt
   repo_path=$(git rev-parse --git-dir 2>/dev/null)
