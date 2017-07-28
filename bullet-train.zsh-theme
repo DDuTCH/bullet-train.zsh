@@ -527,15 +527,21 @@ prompt_virtualenv() {
 
 # NVM: Node version manager
 prompt_nvm() {
-  local nvm_prompt
-  if type nvm >/dev/null 2>&1; then
-    nvm_prompt=$(nvm current 2>/dev/null)
-    [[ "${nvm_prompt}x" == "x" ]] && return
-  else
-    nvm_prompt="$(node --version)"
+  if [[ -f "${PWD}/package.json" ]]; then
+    local nvm_prompt
+    if type nvm >/dev/null 2>&1; then
+      if [[ -z "$CYGWIN" ]]; then
+        nvm_prompt=$(nvm current 2>/dev/null)
+      else
+        nvm_prompt="v$(nvm list | grep 'Currently' | cut -d' ' -f4)"
+      fi
+      [[ "${nvm_prompt}x" == "x" ]] && return
+    else
+      nvm_prompt="$(node --version)"
+    fi
+    nvm_prompt=${nvm_prompt}
+    prompt_segment $BULLETTRAIN_NVM_BG $BULLETTRAIN_NVM_FG $BULLETTRAIN_NVM_PREFIX$nvm_prompt
   fi
-  nvm_prompt=${nvm_prompt}
-  prompt_segment $BULLETTRAIN_NVM_BG $BULLETTRAIN_NVM_FG $BULLETTRAIN_NVM_PREFIX$nvm_prompt
 }
 
 #AWS Profile
